@@ -14,3 +14,7 @@ To use run:
 
 If you need any additional help run the following command:
 `python3 emValidator.py -h`
+
+If you purchase an api key, you can add it to the variable api_key on line 121 of the script. If you add the api key to that variable, you can omit adding the `-a` and pasting in your api key every time you run the script.
+
+If you have a free api key, the above method to hardcode the key into the script will also work.
