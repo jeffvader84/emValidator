@@ -155,12 +155,6 @@ ran_uaString = random_ua()
 print(ran_uaString)
 # make api call
 get = api_call(ran_uaString)
-print(sep)
-print(get.headers)
-print(sep)
-print(get.status_code)
-print(sep)
-new_line()
 # get the status code
 s_code = get.status_code
 
