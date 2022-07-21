@@ -1,6 +1,8 @@
 import json, requests, os, argparse, sys
 import pandas as pd
 from time import sleep
+from random_user_agent.user_agent import UserAgent
+from random_user_agent.params import SoftwareName, OperatingSystem, SoftwareEngine, HardwareType, SoftwareType, Popularity
 
 # def functions - start
 
@@ -67,11 +69,11 @@ def j_output():
         json_file.close()
         json_file_name = f'{email}.json'
 
-def api_call():
+def api_call(useragent):
     if not args.apikey:
-        get = requests.get(checker, headers={'Key': api_key, 'User-Agent': 'My Script'})
+        get = requests.get(checker, headers={'Key': api_key, 'User-Agent': f'useragent'})
     elif args.apikey:
-        get = requests.get(checker, headers={'Key': args.apikey, 'User-Agent': 'My Script'})
+        get = requests.get(checker, headers={'Key': args.apikey, 'User-Agent': f'useragent'})
     else:
         print('No api key given as argument or added to variable in script.')
         print('Exiting script...')
@@ -98,11 +100,31 @@ def f_ext(file):
     filename, filext = os.path.splitext(file)
     return filext
 
+def random_ua():
+    # set list of possible values to pull from for user agent string
+    os = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value, OperatingSystem.UNIX.value, OperatingSystem.MAC.value, OperatingSystem.MAC_OS_X, OperatingSystem.MACOS.value, OperatingSystem.ANDROID.value, OperatingSystem.BLACKBERRY.value, OperatingSystem.CHROMEOS.value, OperatingSystem.FIRE_OS.value, OperatingSystem.FREEBSD.value, OperatingSystem.IOS.value, OperatingSystem.OPENBSD.value, OperatingSystem.WEBOS.value, OperatingSystem.WINDOWS_MOBILE.value, OperatingSystem.WINDOWS_PHONE.value, OperatingSystem.DARWIN.value, OperatingSystem.HP_WEBOS.value, OperatingSystem.RIM_TABLET_OS.value, OperatingSystem.SYMBIAN.value, OperatingSystem.BADA.value, OperatingSystem.BEOS.value, OperatingSystem.PALMOS.value]
+    sofName = [SoftwareName.CHROME.value, SoftwareName.FIREFOX.value, SoftwareName.EDGE.value, SoftwareName.OPERA.value, SoftwareName.CHROMIUM.value, SoftwareName.ANDROID.value, SoftwareName.SAFARI.value, SoftwareName.NINTENDO_BROWSER.value, SoftwareName.NOKIA.value, SoftwareName.BLACKBERRY.value, SoftwareName.THUNDERBIRD.value, SoftwareName.WEBKIT.value, SoftwareName.VIVALDI.value]
+    sofEngine = [SoftwareEngine.KHTML.value, SoftwareEngine.WEBKIT.value, SoftwareEngine.GECKO.value, SoftwareEngine.GOANNA.value, SoftwareEngine.EDGEHTML.value, SoftwareEngine.NETFRONT.value]
+    hwType = [HardwareType.COMPUTER.value, HardwareType.MOBILE.value, HardwareType.SERVER.value, HardwareType.PDA.value, HardwareType.MOBILE__EBOOK_READER.value, HardwareType.MOBILE__PHONE.value, HardwareType.MOBILE__TABLET.value, HardwareType.VEHICLE__CAR.value, HardwareType.LARGE_SCREEN__GAME_CONSOLE.value, HardwareType.LARGE_SCREEN__TV.value, HardwareType.MOBILE__MUSIC_PLAYER.value]
+    sofType = [SoftwareType.APPLICATION__SOFTWARE_LIBRARY.value, SoftwareType.APPLICATION.value, SoftwareType.WEB_BROWSER.value, SoftwareType.APPLICATION__PROXY.value, SoftwareType.BROWSER__IN_APP_BROWSER.value, SoftwareType.APPLICATION__BILLBOARD.value, SoftwareType.APPLICATION__DOWNLOAD_HELPER.value, SoftwareType.BOT__SECURITY_ANALYSER.value]
+    pop = [Popularity.POPULAR.value, Popularity.AVERAGE.value, Popularity.COMMON.value, Popularity.UNCOMMON.value]
+
+    # set values to above list
+    uaRot = UserAgent(software_names = sofName, operating_system = os, software_engine = sofEngine, hardware_type = hwType, software_type = sofType, popularity = pop, limit = 1000)
+
+    # generate list of user agents
+    uaGet = uaRot.get_user_agents()
+
+    # get random user agent string
+    userAgent = uaRot.get_random_user_agent()
+
+    return userAgent
+
 # def functions - stop
 
 # def var - start
 
-version = '1.0'
+version = '1.1'
 
 # def var - stop
 
@@ -128,8 +150,17 @@ email = args.email
 checker = url + email
 # only 10 queries per day (250 per month)
 queries = 10
+# generate random user agent string
+ran_uaString = random_ua()
+print(ran_uaString)
 # make api call
-get = api_call()
+get = api_call(ran_uaString)
+print(sep)
+print(get.headers)
+print(sep)
+print(get.status_code)
+print(sep)
+new_line()
 # get the status code
 s_code = get.status_code
 
