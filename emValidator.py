@@ -124,7 +124,7 @@ def random_ua():
 
 # def var - start
 
-version = '1.1'
+version = '1.2'
 
 # def var - stop
 
@@ -146,14 +146,16 @@ sep = '-' * 55
 
 # var for email provided
 email = args.email
+
 # create url with email address
 checker = url + email
-# only 10 queries per day (250 per month)
-queries = 10
+
 # generate random user agent string
 ran_uaString = random_ua()
+
 # make api call
 get = api_call(ran_uaString)
+
 # get the status code
 s_code = get.status_code
 
@@ -164,9 +166,13 @@ status_code()
 # grab json output
 text = get.text
 # grab current api limit counts
-if args.apikey:
+if 'X-Rate-Limit-Daily-Remaining' in get.headers:
     daily_limit = get.headers['X-Rate-Limit-Daily-Remaining']
     monthly_limit = get.headers['X-Rate-Limit-Monthly-Remaining']
+elif 'X-Rate-Limit-Monthly-Remaining' in get.headers:
+    monthly_limit = get.headers['X-Rate-Limit-Monthly-Remaining']
+else:
+    print("Headers returned no API count for usage limits..")
 
 # save output to json file
 j_output()
@@ -192,11 +198,18 @@ if args.verbose:
     print(df)
 
 # print current api usage
-if args.apikey:
+if 'daily_limit' in locals():
     print(sep)
     print(f'Daily usage left: {daily_limit}')
     print(f'Monthly usage left: {monthly_limit}')
     print(sep)
+elif 'monthly_limit' in locals():
+    print(sep)
+    print(f'Monthly usage left: {monthly_limit}')
+    print(sep)
+else:
+    print("[!] unable to get current API usage count.")
+
 
 ##############################################
 ##                                          ##
