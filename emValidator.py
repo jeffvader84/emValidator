@@ -152,7 +152,6 @@ checker = url + email
 queries = 10
 # generate random user agent string
 ran_uaString = random_ua()
-print(ran_uaString)
 # make api call
 get = api_call(ran_uaString)
 # get the status code
